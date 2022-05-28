@@ -59,29 +59,15 @@ schema_view = get_schema_view(
 )
 
 urlpatterns = [
-    # path('admin/', admin.site.urls),
-    # path('index/', index),
-    # path('index/', views.index),
-    # path('get_project/', views.get_project),
-    # path('get_project1/', views.get_project1),
-    # path('get_project/2/', views.get_project2),
-
-    # path('projects/<int:pk>/', views.get_projects),
-    # re_path(r'^projects/(?P<pk>\w{3})/$', views.get_projects),
-    # re_path(r'^projects/(?P<pk>\d+)/$', views.get_projects),
-    # path('project/put/', views.index),
-    # path('project/', include('projects.urls')),
     path('', include('projects.urls')),
+    path('', include('interfaces.urls')),
+    path('', include('reports.urls')),
 
     path('docs/', include_docs_urls(title='测试平台接口文档', description='xxx接口文档')),
     re_path(r'^swagger(?P<format>\.json|\.yaml)$', schema_view.without_ui(cache_timeout=0), name='schema-json'),
     path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
 
-    # 在全局路由表中添加rest_framework.urls子路由
-    # a.rest_framework.urls提供了登录和登出功能（返回的是一个HTML页面，并不是接口）
     path('api/', include('rest_framework.urls')),
-
-    # path('user/login/', obtain_jwt_token),
     path('user/', include('users.urls')),
 ]

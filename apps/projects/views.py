@@ -14,8 +14,13 @@ from rest_framework.decorators import action
 from rest_framework import permissions
 
 from .models import Projects
-from .serializers import ProjectModelSerializer,ProjectsNamesModelSerailizer
+# from .serializers import ProjectModelSerializer,ProjectsNamesModelSerailizer
+from . import serializers
 from utils.pagination import PageNumberPagination
+from interfaces.models import Interfaces
+from testcases.models import Testcases
+from testsuites.models import Testsuits
+from configures.models import Configures
 
 
 logger = logging.getLogger('dev07')
@@ -37,7 +42,7 @@ class ProjectViewSet(viewsets.ModelViewSet):
 
     """
     queryset = Projects.objects.all()
-    serializer_class = ProjectModelSerializer
+    serializer_class = serializers.ProjectModelSerializer
 
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
     search_fields = ['=name', '=leader', '=id']
@@ -49,14 +54,12 @@ class ProjectViewSet(viewsets.ModelViewSet):
         response = super().list(request, *args, **kwargs)
         # result_list = []
         for item in response.data['results']:
-            # TODO
-            item['interfaces'] = 3
-            item['testsuits'] = 3
-            item['testcases'] = 3
-            item['configures'] = 3
-            # result_list.append(item)
+            item['interfaces'] = Interfaces.objects.filter(project_id=item.get('id')).count()
+            item['testsuits'] = Testsuits.objects.filter(project_id=item.get('id')).count()
+            item['testcases'] = Testcases.objects.filter(interface__project_id=item.get('id')).count()
+            item['configures'] = Configures.objects.filter(interface__project_id=item.get('id')).count()
+            # values annotate
 
-        # response.data['results'] = result_list
         return response
 
     @action(methods=['GET'], detail=False)
@@ -67,13 +70,15 @@ class ProjectViewSet(viewsets.ModelViewSet):
 
     @action(detail=True)
     def interfaces(self, request, *args, **kwargs):
-        # TODO
-        project = self.get_object()
-        interfaces_qs = project.interfaces_set.all()
-        interfaces_data = [{'id': interface.id, 'name': interface.name} for interface in interfaces_qs]
+        # project = self.get_object()
+        # interfaces_qs = project.interfaces_set.all()
+        # interfaces_data = [{'id': interface.id, 'name': interface.name} for interface in interfaces_qs]
 
         # logger.debug(interfaces_data)
-        return Response(interfaces_data, status=200)
+        # return Response(interfaces_data, status=200)
+        response = super().retrieve(request, *args, **kwargs)
+        response.data = response.data.get('interfaces')
+        return response
 
     def get_serializer_class(self):
         """
@@ -82,9 +87,10 @@ class ProjectViewSet(viewsets.ModelViewSet):
         :return:
         """
         if self.action == 'names':
-            return ProjectsNamesModelSerailizer
+            return serializers.ProjectsNamesModelSerailizer
+        elif self.action == 'interfaces':
+            return serializers.InterfacesProjectsModelSerializer
         else:
-            # return self.serializer_class
             return super().get_serializer_class()
 
     def paginate_queryset(self, queryset):
