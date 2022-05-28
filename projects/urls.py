@@ -28,4 +28,6 @@ urlpatterns = [
     # 定义类视图的路由条目
     # a.类视图.as_view()
     path('projects/<int:pk>/', views.ProjectsView.as_view()),
+    path('projects/', views.ProjectsView.as_view()),
+    # path('projects/<int:pk>/', views.ProjectsDetailView.as_view()),
 ]
