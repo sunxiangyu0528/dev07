@@ -1,5 +1,7 @@
 from django.db import models
 
+from utils.base_model import BaseModel
+
 
 class Animal(models.Model):
     """
@@ -21,8 +23,12 @@ class Animal(models.Model):
     gender = models.BooleanField()
 
 
-class Projects(models.Model):
-    ids = models.IntegerField(primary_key=True, verbose_name='项目主键', help_text='项目主键')
+# class Projects(models.Model):
+class Projects(BaseModel):
+    # 在一个模型类中仅仅只能为一个字段指定primary_key=True
+    # 一旦在模型类中的某个字段上指定了primary_key=True，那么ORM框架就不会自动创建名称为id的主键
+    # ids = models.IntegerField(primary_key=True, verbose_name='项目主键', help_text='项目主键')
+    # id = models.AutoField(primary_key=True, verbose_name='项目主键', help_text='项目主键')
     # a.CharField类型必须指定max_length参数（改字段的最大字节数）
     # b.如果需要给一个字段添加唯一约束，unique=True（默认为False）
     name = models.CharField(max_length=20, verbose_name='项目名称', help_text='项目名称',
@@ -40,10 +46,17 @@ class Projects(models.Model):
 
     # f.在DateTimeField、DateField等字段中，指定auto_now_add=True，在创建一条记录时，会自动将创建记录时的时间作为该字段的值，后续在更新数据时，就不再修改
     # g.在DateTimeField、DateField等字段中，指定auto_now=True，在更新一条记录时，会自动将更新记录时的时间作为该字段的值
-    create_time = models.DateTimeField(auto_now_add=True, verbose_name='创建时间', help_text='创建时间')
-    update_time = models.DateTimeField(auto_now=True, verbose_name='更新时间', help_text='更新时间')
+    # create_time = models.DateTimeField(auto_now_add=True, verbose_name='创建时间', help_text='创建时间')
+    # update_time = models.DateTimeField(auto_now=True, verbose_name='更新时间', help_text='更新时间')
 
     # h.可以在任意一个模型类中创建Meta内部类，用于修改数据库的元数据信息
     class Meta:
         # i.db_table指定创建的数据表名称
         db_table = 'tb_projects'
+        # 为当前数据表设置中文描述信息
+        verbose_name = '项目表'
+        verbose_name_plural = '项目表'
+        ordering = ['id']
+
+    def __str__(self):
+        return f"Projects({self.name})"
