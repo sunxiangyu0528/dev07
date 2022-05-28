@@ -21,12 +21,13 @@ from interfaces.models import Interfaces
 from testcases.models import Testcases
 from testsuites.models import Testsuits
 from configures.models import Configures
+from utils.mixins import NamesMixin
 
 
 logger = logging.getLogger('dev07')
 
 
-class ProjectViewSet(viewsets.ModelViewSet):
+class ProjectViewSet(NamesMixin, viewsets.ModelViewSet):
     """
     list:
     获取项目列表数据
@@ -62,11 +63,11 @@ class ProjectViewSet(viewsets.ModelViewSet):
 
         return response
 
-    @action(methods=['GET'], detail=False)
-    def names(self, request, *args, **kwargs):
-        response = super().list(request, *args, **kwargs)
-        logger.info(response.data)
-        return response
+    # @action(methods=['GET'], detail=False)
+    # def names(self, request, *args, **kwargs):
+    #     response = super().list(request, *args, **kwargs)
+    #     logger.info(response.data)
+    #     return response
 
     @action(detail=True)
     def interfaces(self, request, *args, **kwargs):
@@ -93,15 +94,15 @@ class ProjectViewSet(viewsets.ModelViewSet):
         else:
             return super().get_serializer_class()
 
-    def paginate_queryset(self, queryset):
-        if self.action == "names":
-            return
-        else:
-            return super().paginate_queryset(queryset)
+    # def paginate_queryset(self, queryset):
+    #     if self.action == "names":
+    #         return
+    #     else:
+    #         return super().paginate_queryset(queryset)
 
-    def get_queryset(self):
-        if self.action == "names":
-            return self.queryset.filter(name__icontains='2')
-        else:
-            return super().get_queryset()
+    # def get_queryset(self):
+    #     if self.action == "names":
+    #         return self.queryset.filter(name__icontains='2')
+    #     else:
+    #         return super().get_queryset()
 
