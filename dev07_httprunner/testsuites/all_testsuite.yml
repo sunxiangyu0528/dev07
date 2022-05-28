@@ -24,3 +24,12 @@ testcases:
 #        - title-username-password-status_code-msg: ${P(data/data.csv)}
         - title-username-password-status_code-msg: ${get_accounts()}
 
+
+# 变量的优先级：
+#   testsuite parameters > testsuite config variables > testcase config variables > api variables
+
+# base_url的优先级：
+#   testsuite config base_url > testcase config base_url > api base_url
+
+
+
