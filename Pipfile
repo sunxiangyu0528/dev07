@@ -10,6 +10,7 @@ coreapi = "*"
 pygments = "*"
 markdown = "*"
 drf-yasg = "*"
+djangorestframework-jwt = "*"
 
 [requires]
 python_version = "3.8"

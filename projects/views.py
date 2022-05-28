@@ -11,6 +11,7 @@ from rest_framework import mixins
 from rest_framework import generics
 from rest_framework import viewsets
 from rest_framework.decorators import action
+from rest_framework import permissions
 
 from .models import Projects
 from .serializers import ProjectSerilizer, ProjectModelSerializer, ProjectModelSerializer1, ProjectsNamesModelSerailizer
@@ -42,6 +43,13 @@ class ProjectViewSet(viewsets.ModelViewSet):
     search_fields = ['=name', '=leader', '=id']
     ordering_fields = ['id', 'name', 'leader']
     # pagination_class = PageNumberPagination
+
+    # 在继承了APIView的类视图中，可以使用permission_classes类属性指定权限类，值为列表，可添加多个权限类
+    permission_classes = [permissions.IsAuthenticated]
+
+    # 在继承了APIView的类视图中，可以使用authentication_classes类属性指定认证类，值为列表，可添加多个认证类
+    # 优秀级高于全局，一般无需在特定类视图中指定
+    # authentication_classes = []
 
     @action(methods=['GET'], detail=False)
     def names(self, request, *args, **kwargs):
