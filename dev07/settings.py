@@ -294,3 +294,6 @@ CORS_ORIGIN_ALLOW_ALL = True
 
 # 允许跨域时携带Cookie, 默认为False
 CORS_ALLOW_CREDENTIALS = True
+
+# 定义存在httprunner工程项目的路径
+PROJECT_DIR = os.path.join(BASE_DIR, 'projects_dir')

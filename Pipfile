@@ -12,7 +12,8 @@ markdown = "*"
 drf-yasg = "*"
 djangorestframework-jwt = "*"
 django-cors-headers = "*"
-httprunner = "==2.5.7"
+httprunner = "==1.5.8"
+pyyaml = "*"
 
 [requires]
 python_version = "3.8"
