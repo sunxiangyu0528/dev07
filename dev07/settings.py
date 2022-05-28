@@ -141,11 +141,11 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # 2、默认JSONParser、FormParser、MultiPartParser三个解析器类
 # 3、可以在全局配置文件（settings.py）中修改DRF全局参数，把REST_FRAMEWORK作为名称
 REST_FRAMEWORK = {
-    'DEFAULT_PARSER_CLASSES': [
-        'rest_framework.parsers.JSONParser',
-        # 'rest_framework.parsers.FormParser',
-        # 'rest_framework.parsers.MultiPartParser'
-    ],
+    # 'DEFAULT_PARSER_CLASSES': [
+    #     'rest_framework.parsers.JSONParser',
+    #     'rest_framework.parsers.FormParser',
+    #     'rest_framework.parsers.MultiPartParser'
+    # ],
 
     # DRF中的渲染器（类）
     # 1、可以根据请求头中的Accept参数来自动渲染前端需要的数据格式
@@ -153,8 +153,17 @@ REST_FRAMEWORK = {
     # 3、如果前端请求头未指定Accept参数或者指定为application/json，那么会自动返回json格式的数据
     # 4、如果前端请求头指定Accept参数为text/html，那么默认会返回可浏览的api页面（api进行管理）
     # 5、可以在DEFAULT_RENDERER_CLASSES中指定需要使用的渲染器
-    'DEFAULT_RENDERER_CLASSES': [
-        'rest_framework.renderers.JSONRenderer',
-        # 'rest_framework.renderers.BrowsableAPIRenderer',
-    ],
+    # 'DEFAULT_RENDERER_CLASSES': [
+    #     'rest_framework.renderers.JSONRenderer',
+    #     'rest_framework.renderers.BrowsableAPIRenderer',
+    # ],
+
+    # 1、在全局DEFAULT_FILTER_BACKENDS指定使用的过滤引擎类（SearchFilter为搜索引擎类）
+    'DEFAULT_FILTER_BACKENDS': ['rest_framework.filters.SearchFilter',
+                                'rest_framework.filters.OrderingFilter'],
+    # 可以在全局使用SEARCH_PARAM修改前端过滤查询字符串参数名称（默认为search）
+    # 'SEARCH_PARAM': 'se',
+
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 3,
 }
