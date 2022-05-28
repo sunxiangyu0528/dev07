@@ -40,3 +40,11 @@ ProjectSerilizer(instance=queryset, many=True)
         如果没有调用save方法，那么会把validated_data作为序列化输出的源数据）
 
 
+
+GenericAPIView有哪些方法和类属性?
+1、类属性
+    queryset、serializer_class
+
+2、方法
+get_queryset、get_serializer、get_serializer_class、filter_queryset、paginate_queryset、
+get_paginated_response
