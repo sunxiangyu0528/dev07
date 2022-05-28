@@ -17,6 +17,7 @@ from .models import Interfaces
 from projects.models import Projects
 from testcases.models import Testcases
 from configures.models import Configures
+from utils.base_serializers import RunSerializer
 
 
 class InterfaceModelSerilizer(serializers.ModelSerializer):
@@ -38,11 +39,6 @@ class InterfaceModelSerilizer(serializers.ModelSerializer):
         result = super().to_internal_value(data)
         result['project'] = result.pop('project_id')
         return result
-
-    # def create(self, validated_data):
-    #     validated_data['project'] = validated_data.pop('project_id')
-    #     # validated_data['project_id'] = validated_data.get('project_id').id
-    #     return super().create(validated_data)
 
 
 class TestcasesNamesModelSerializer(serializers.ModelSerializer):
@@ -73,3 +69,9 @@ class ConfiguresInterfacesModelSerializer(serializers.ModelSerializer):
     class Meta:
         model = Interfaces
         fields = ('configures',)
+
+
+class InterfaceRunSerializer(RunSerializer):
+
+    class Meta(RunSerializer.Meta):
+        model = Interfaces

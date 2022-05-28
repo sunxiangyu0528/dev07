@@ -80,34 +80,19 @@ class ProjectViewSet(NamesMixin, RunMixin, viewsets.ModelViewSet):
         response.data = response.data.get('interfaces')
         return response
 
-    @action(methods=['post'], detail=True)
-    def run(self, request, *args, **kwargs):
-        # 1、取出用例模型对象并获取env_id
-        # instance = self.get_object()  # type: Projects
-        # serializer = self.get_serializer(data=request.data)
-        # serializer.is_valid(raise_exception=True)
-        # env_id = serializer.validated_data.get('env_id')
-        # env = Envs.objects.get(id=env_id)
+    # @action(methods=['post'], detail=True)
+    # def run(self, request, *args, **kwargs):
+    #     testcase_qs = Testcases.objects.filter(interface__project=instance)
+    #     if len(testcase_qs) == 0:
+    #         return Response({'msg': '此项目下没有用例，无法执行！'}, status=400)
+    #
+    #     return self.run(request, *args, **kwargs)
 
-        # 2、创建以时间戳命名的目录
-        # testcase_dir_path = os.path.join(settings.PROJECT_DIR, datetime.strftime(datetime.now(), "%Y%m%d%H%M%S"))
-        # os.makedirs(testcase_dir_path)
-
-        # 获取项目下的所有用例数据
-        testcase_qs = Testcases.objects.filter(interface__project=instance)
-
+    def get_testcase_qs(self):
+        testcase_qs = Testcases.objects.filter(interface__project=self.get_object())
         if len(testcase_qs) == 0:
             return Response({'msg': '此项目下没有用例，无法执行！'}, status=400)
-
-        return self.execute(testcase_qs)
-
-        # 3、创建以项目名命名的目录
-        # 4、生成debugtalks.py、yaml用例文件
-        # for testcase_obj in testcase_qs:
-        #     common.generate_testcase_file(testcase_obj, env, testcase_dir_path)
-        #
-        # # 5、运行用例并生成测试报告
-        # return common.run_testcase(instance, testcase_dir_path)
+        return testcase_qs
 
     def get_serializer_class(self):
         """

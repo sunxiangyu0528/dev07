@@ -61,15 +61,15 @@ class InterfacesProjectsModelSerializer(serializers.ModelSerializer):
         fields = ('interfaces', )
 
 
-# class ProjectRunSerializer(RunSerializer):
-#
-#     class Meta(RunSerializer.Meta):
-#         model = Projects
-
 class ProjectRunSerializer(RunSerializer):
-    env_id = serializers.IntegerField(label="所属环境id", help_text="所属环境id",
-                                      validators=[ManualValidateIsExist('env')])
 
-    class Meta:
+    class Meta(RunSerializer.Meta):
         model = Projects
-        fields = ('id', 'env_id')
+
+# class ProjectRunSerializer(RunSerializer):
+#     env_id = serializers.IntegerField(label="所属环境id", help_text="所属环境id",
+#                                       validators=[ManualValidateIsExist('env')])
+#
+#     class Meta:
+#         model = Projects
+#         fields = ('id', 'env_id')

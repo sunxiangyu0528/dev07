@@ -3,18 +3,20 @@ import logging
 from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework import permissions
+from rest_framework.response import Response
 
 from .models import Interfaces
 from . import serializers
 from utils.pagination import PageNumberPagination
 from testcases.models import Testcases
 from configures.models import Configures
+from utils.mixins import RunMixin
 
 
 logger = logging.getLogger('dev07')
 
 
-class InterfaceViewSet(viewsets.ModelViewSet):
+class InterfaceViewSet(RunMixin, viewsets.ModelViewSet):
     queryset = Interfaces.objects.all()
     serializer_class = serializers.InterfaceModelSerilizer
     permission_classes = [permissions.IsAuthenticated]
@@ -33,15 +35,24 @@ class InterfaceViewSet(viewsets.ModelViewSet):
         return response
 
     @action(detail=True)
-    def configures(self, request, *args, **kwargs):
+    def configs(self, request, *args, **kwargs):
         response = super().retrieve(request, *args, **kwargs)
         response.data = response.data.get('configures')
         return response
 
+    def get_testcase_qs(self):
+        instance = self.get_object()    # type: Interfaces
+        qs = instance.testcases_set.all()
+        if len(qs) == 0:
+            return Response({'msg': '此接口下没有用例，无法执行！'}, status=400)
+        return qs
+
     def get_serializer_class(self):
         if self.action == 'testcases':
             return serializers.TestcasesInterfacesModelSerializer
-        elif self.action == 'configures':
+        elif self.action == 'configs':
             return serializers.ConfiguresInterfacesModelSerializer
+        elif self.action == 'run':
+            return serializers.InterfaceRunSerializer
         else:
             return super().get_serializer_class()
