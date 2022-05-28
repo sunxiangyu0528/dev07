@@ -48,3 +48,23 @@ GenericAPIView有哪些方法和类属性?
 2、方法
 get_queryset、get_serializer、get_serializer_class、filter_queryset、paginate_queryset、
 get_paginated_response
+
+
+HttpRunner 2.项目工程结构
+1、安装2.5.7版本
+    pipenv install httprunner==2.5.7
+
+2、安装完成后，会自带httprunner、hrun命令，用于运行用例、管理操作
+
+3、项目结构
+    api目录：用于存放接口的最小单元（正向用例）
+
+    reports目录：用于存放测试报告
+
+    testcases目录：用于处理接口复杂的执行逻辑；处理接口依赖
+
+    testsuites目录：用户批量执行用例，可以实现数据驱动测试
+
+    .env文件：用于存放全局环境变量
+
+    debugtalk.py文件：用于定义python函数，处理动态参数

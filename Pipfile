@@ -11,6 +11,8 @@ pygments = "*"
 markdown = "*"
 drf-yasg = "*"
 djangorestframework-jwt = "*"
+django-cors-headers = "*"
+httprunner = "==2.5.7"
 
 [requires]
 python_version = "3.8"

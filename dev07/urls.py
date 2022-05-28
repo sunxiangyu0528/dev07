@@ -82,5 +82,6 @@ urlpatterns = [
     # a.rest_framework.urls提供了登录和登出功能（返回的是一个HTML页面，并不是接口）
     path('api/', include('rest_framework.urls')),
 
-    path('user/login/', obtain_jwt_token),
+    # path('user/login/', obtain_jwt_token),
+    path('user/', include('users.urls')),
 ]
