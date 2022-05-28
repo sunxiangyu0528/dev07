@@ -8,33 +8,12 @@ from .models import Projects
 from .serializers import ProjectSerilizer
 
 
-
 class ProjectsView(View):
-    """
-    2、获取所有项目数据
-        GET /projects/
-        数据库操作（读取所有项目数据） -> 序列化输出操作（将模型对象转化为Python中的基本类型）
-
-    3、创建一条项目数据
-        POST /projects/  新的项目数据以json的形式来传递
-
-        数据校验（规范传入的参数） —> 反序列化输入操作（将json格式的数据转化为复杂的类型） -> 数据库操作（创建项目数据）
-            -> 序列化输出操作（将模型对象转化为Python中的基本类型）
-    """
-
     def get(self, request):
         # a.获取所有项目数据（查询集），获取列表数据
         queryset = Projects.objects.all()
 
         # b.将项目的查询集数据转化为嵌套字典的列表
-        # project_list = []
-        # for item in queryset:
-        #     item: Projects
-        #     project_list.append({
-        #         'id': item.id,
-        #         'name': item.name,
-        #         'leader': item.leader
-        #     })
 
         # 三、序列化器的使用
         # 1.可以使用序列化器进行序列化输出操作
@@ -71,33 +50,12 @@ class ProjectsView(View):
         # project_obj = Projects.objects.create(**python_data)
         project_obj = Projects.objects.create(**serializer11.validated_data)
 
-        # 4、将创建成功的数据返回给前端
-        # python_dict = {
-        #     'id': project_obj.id,
-        #     'name': project_obj.name,
-        #     'msg': '创建成功'
-        # }
-
         serializer = ProjectSerilizer(instance=project_obj)
         # return JsonResponse(python_dict, status=201)
         return JsonResponse(serializer.data, status=201)
 
 
 class ProjectsDetailView(View):
-    """
-    1、获取一条项目数据（获取详情数据）
-        GET /projects/<int:pk>/
-        数据校验（规范传入的参数） -> 数据库操作（读取一条项目数据） -> 序列化输出操作（将模型对象转化为Python中的基本类型）
-
-    4、更新一条项目数据
-        PUT /projects/<int:pk>/   新的项目数据以json的形式来传递
-        数据校验（规范传入的参数） —> 反序列化输入操作（将json格式的数据转化为复杂的类型） -> 数据库操作（更新项目数据）
-            -> 序列化输出操作（将模型对象转化为Python中的基本类型）
-
-    5、删除一条项目数据
-        DELETE /projects/<int:pk>/
-        数据校验（规范传入的参数） -> 数据库操作（删除一条项目数据）
-    """
     def get(self, request, pk):
         # 1、需要校验pk在数据库中是否存在
 
@@ -106,13 +64,6 @@ class ProjectsDetailView(View):
             project_obj = Projects.objects.get(id=pk)
         except Exception as e:
             return JsonResponse({'msg': '参数有误'}, status=400)
-
-        # 3、将读取的项目数据转化为字典
-        # python_dict = {
-        #     'id': project_obj.id,
-        #     'name': project_obj.name,
-        #     'msg': '获取项目数据成功'
-        # }
 
         serializer = ProjectSerilizer(instance=project_obj)
 
