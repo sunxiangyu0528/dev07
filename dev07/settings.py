@@ -15,7 +15,6 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
@@ -26,7 +25,6 @@ SECRET_KEY = 'django-insecure-oay(@i%k!r6lp*0s#*s=9-&%h7_37$5vdl3#x_nog=zksp4us4
 DEBUG = True
 
 ALLOWED_HOSTS = []
-
 
 # Application definition
 
@@ -74,7 +72,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'dev07.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
@@ -98,7 +95,6 @@ DATABASES = {
 
 }
 
-
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
 
@@ -117,7 +113,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
 
@@ -131,7 +126,6 @@ USE_L10N = True
 
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
@@ -141,3 +135,26 @@ STATIC_URL = '/static/'
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# DRF中的解析器（类）
+# 1、可以根据请求头中的Content-Type来自动解析参数，使用统一的data属性来获取即可
+# 2、默认JSONParser、FormParser、MultiPartParser三个解析器类
+# 3、可以在全局配置文件（settings.py）中修改DRF全局参数，把REST_FRAMEWORK作为名称
+REST_FRAMEWORK = {
+    'DEFAULT_PARSER_CLASSES': [
+        'rest_framework.parsers.JSONParser',
+        # 'rest_framework.parsers.FormParser',
+        # 'rest_framework.parsers.MultiPartParser'
+    ],
+
+    # DRF中的渲染器（类）
+    # 1、可以根据请求头中的Accept参数来自动渲染前端需要的数据格式
+    # 2、默认的渲染器为JSONRenderer、BrowsableAPIRenderer
+    # 3、如果前端请求头未指定Accept参数或者指定为application/json，那么会自动返回json格式的数据
+    # 4、如果前端请求头指定Accept参数为text/html，那么默认会返回可浏览的api页面（api进行管理）
+    # 5、可以在DEFAULT_RENDERER_CLASSES中指定需要使用的渲染器
+    'DEFAULT_RENDERER_CLASSES': [
+        'rest_framework.renderers.JSONRenderer',
+        # 'rest_framework.renderers.BrowsableAPIRenderer',
+    ],
+}
