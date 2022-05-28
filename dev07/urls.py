@@ -49,8 +49,10 @@ urlpatterns = [
     # path('get_project1/', views.get_project1),
     # path('get_project/2/', views.get_project2),
 
-    path('projects/<int:pk>/', views.get_projects),
-    re_path(r'^projects/(?P<pk>\w{3})/$', views.get_projects),
-    path('project/put/', views.index),
-    path('project/', include('projects.urls')),
+    # path('projects/<int:pk>/', views.get_projects),
+    # re_path(r'^projects/(?P<pk>\w{3})/$', views.get_projects),
+    # re_path(r'^projects/(?P<pk>\d+)/$', views.get_projects),
+    # path('project/put/', views.index),
+    # path('project/', include('projects.urls')),
+    path('', include('projects.urls')),
 ]
