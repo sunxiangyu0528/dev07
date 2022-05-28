@@ -5,123 +5,258 @@ from rest_framework.views import APIView
 from rest_framework.generics import GenericAPIView
 from rest_framework import status
 from rest_framework import filters
+from rest_framework import mixins
+from rest_framework import generics
+from rest_framework import viewsets
+from rest_framework.decorators import action
 
 from .models import Projects
-from .serializers import ProjectSerilizer, ProjectModelSerializer
+from .serializers import ProjectSerilizer, ProjectModelSerializer, ProjectModelSerializer1, ProjectsNamesModelSerailizer
+from utils.pagination import PageNumberPagination
 
 
-# class ProjectsView(View):
-# class ProjectsView(APIView):
-class ProjectsView(GenericAPIView):
+# class ListCreateAPIView(
+#     mixins.CreateModelMixin,
+#     mixins.ListModelMixin,
+#     GenericAPIView):
+#
+#     def get(self, request, *args, **kwargs):
+#         return self.list(request, *args, **kwargs)
+#
+#     def post(self, request, *args, **kwargs):
+#         return self.create(request, *args, **kwargs)
+
+
+# class ProjectsView(GenericAPIView):
+# class ProjectsView(
+#     mixins.CreateModelMixin,
+#     mixins.ListModelMixin,
+#     GenericAPIView):
+# class ProjectsView(ListCreateAPIView):
+class ProjectsView(generics.ListCreateAPIView):
     """
-    继承GenericAPIView父类（GenericAPIView子类）
-    a.具备View的所有特性
-    b.具备了APIView中的认证、授权、限流功能
-    c.还支持对于获取列表数据接口的功能：搜索、排序、分页
+    a.直接继承Mixin拓展类，拓展类只提供了action方法
+    b.action方法有哪些呢？
+        list            -->  获取列表数据
+        retrieve        --> 获取详情数据
+        create          --> 创建数据
+        update          --> 更新数据（完整）
+        partial_update  --> 更新数据（部分）
+        destroy         --> 删除数据
+    c.类视图往往只能识别如下方法？
+        get   -->  list
+        get   -->  retrieve
+        post  -->  create
+        put   -->  update
+        patch -->  partial_update
+        delete -->  destroy
+    d.为了进一步优化代码，需要使用具体的通用视图XXXAPIView
     """
-    # 一旦继承GenericAPIView之后，往往需要指定queryset、serializer_class类属性
-    # queryset指定当前类视图的实例方法需要使用的查询集对象
     queryset = Projects.objects.all()
-    # serializer_class指定当前类视图的实例方法需要使用的序列化器类
-    serializer_class = ProjectSerilizer
+    serializer_class = ProjectModelSerializer
 
-    # filter_backends在继承了GenericAPIView的类视图中指定使用的过滤引擎类（搜索、排序）
-    # 优先级高于全局
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
-    # 2、在继承了GenericAPIView的类视图中，search_fields类属性指定模型类中需要进行搜索过滤的字段名
-    # 3、使用icontains查询类型作为过滤类型
-    # 4、可以在字段名称前添加相应符号，指定查询类型
-    #  '^': 'istartswith',
-    #  '=': 'iexact',
-    #  '$': 'iregex',
-    search_fields = ['^name', '=leader', 'id']
-
-    # ordering_fields类属性指定模型类中允许前端进行排序的字段名称
-    # 前端默认可以使用ordering作为排序功能查询字符串参数名称，默认改字段的升序
-    # 如果在字段名称前添加“-”，代表改字段降序
-    # 如果指定多个排序字段，使用英文逗号进行分割
+    search_fields = ['=name', '=leader', '=id']
     ordering_fields = ['id', 'name', 'leader']
 
-    def get(self, request: Request):
-        # name_param = request.query_params.get('name')
-        # if name_param:
-        #     queryset = Projects.objects.filter(name__exact=name_param)
-        # else:
-        #     queryset = Projects.objects.all()
+    # 可以在类视图中指定分页引擎类，优先级高于全局
+    pagination_class = PageNumberPagination
 
-        # queryset = Projects.objects.all()
+    # def get(self, request, *args, **kwargs):
+    #     # queryset = self.filter_queryset(self.get_queryset())
+    #     #
+    #     # # 3、调用paginate_queryset方法对查询集对象进行分页
+    #     # page = self.paginate_queryset(queryset)
+    #     # if page is not None:
+    #     #     serializer = self.get_serializer(instance=page, many=True)
+    #     #     return self.get_paginated_response(serializer.data)
+    #     # serializer = self.get_serializer(instance=queryset, many=True)
+    #     # return Response(serializer.data, status=status.HTTP_200_OK)
+    #
+    #     # a.python中支持多重继承，一个类可以同时继承多个父类
+    #     # b.类中的方法和属性是按照__mro__所指定的继承顺序进行搜索
+    #     # print(ProjectsView.__mro__)
+    #     return self.list(request, *args, **kwargs)
 
-        # 1、在实例方法中，往往使用get_queryset()方法获取查询集对象
-        # 2、一般不会指定调用queryset类属性，原因：为了提供让用户重写get_queryset()
-        # 3、如果未重写get_queryset()方法，那么必须得指定queryset类属性
-        # queryset = self.queryset
-        # queryset = self.get_queryset()
-
-        # filter_queryset对查询对象进行过滤操作
-        queryset = self.filter_queryset(self.get_queryset())
-        # serializer = ProjectSerilizer(instance=queryset, many=True)
-
-        page = self.paginate_queryset(queryset)
-        if page is not None:
-            serializer = self.get_serializer(instance=page, many=True)
-            return self.get_paginated_response(serializer.data)
-        # 1、在实例方法中，往往使用get_serializer()方法获取序列化器类
-        # 2、一般不会直接调用serializer_class类属性，原因：为了让用户重写get_serializer_class()
-        # 3、如果未重写get_serializer_class()方法，那么必须得指定serializer_class类属性
-        # serializer = self.serializer_class(instance=queryset, many=True)
-        serializer = self.get_serializer(instance=queryset, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-    def post(self, request):
-        # serializer = ProjectModelSerializer(data=request.data)
-        # serializer = self.serializer_class(data=request.data)
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    # def post(self, request, *args, **kwargs):
+    #     # serializer = self.get_serializer(data=request.data)
+    #     # serializer.is_valid(raise_exception=True)
+    #     # serializer.save()
+    #     # return Response(serializer.data, status=status.HTTP_201_CREATED)
+    #     return self.create(request, *args, **kwargs)
 
 
-# class ProjectsDetailView(APIView):
-class ProjectsDetailView(GenericAPIView):
+
+# class ProjectsDetailView(
+#     mixins.RetrieveModelMixin,
+#     mixins.UpdateModelMixin,
+#     mixins.DestroyModelMixin,
+#     GenericAPIView):
+class ProjectsDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Projects.objects.all()
     serializer_class = ProjectSerilizer
 
-    # a.lookup_url_kwarg默认为None
-    # b.如果lookup_url_kwarg为None，那么lookup_url_kwarg与lookup_field值相同（‘pk’）
-    # c.lookup_url_kwarg指定url路由条目中外键的路径参数名称，一般无需指定
-    # lookup_url_kwarg = 'kk'
+    # def get(self, request, *args, **kwargs):
+    #     # instance = self.get_object()
+    #     # serializer = self.get_serializer(instance=instance)
+    #     # return Response(serializer.data, status=status.HTTP_200_OK)
+    #     return self.retrieve(request, *args, **kwargs)
+    #
+    # def put(self, request, *args, **kwargs):
+    #     # instance = self.get_object()
+    #     # serializer = self.get_serializer(instance=instance, data=request.data)
+    #     # serializer.is_valid(raise_exception=True)
+    #     # serializer.save()
+    #     # return Response(serializer.data, status=status.HTTP_201_CREATED)
+    #     return self.update(request, *args, **kwargs)
+    #
+    # def delete(self, request, *args, **kwargs):
+    #     # instance = self.get_object()
+    #     # instance.delete()
+    #     # return Response(status=status.HTTP_204_NO_CONTENT)
+    #     return self.destroy(request, *args, **kwargs)
 
-    # def get_object(self, pk):
-    #     try:
-    #         # project_obj = Projects.objects.get(id=pk)
-    #         project_obj = self.get_queryset().get(id=pk)
-    #         return project_obj
-    #     except Exception as e:
-    #         return Response({'msg': '参数有误'}, status=400)
 
-    def get(self, request, **kwargs):
-        # project_obj = self.get_object(pk)
-        # get_object可以获取模型对象，无需传递外键值
-        project_obj = self.get_object()
+# a.可以继承视图集父类ViewSet
+# b.在定义url路由条目时，支持给as_view传递字典参数（请求方法名与具体调用的action方法名的一一对应关系）
+# c.ViewSet继承了ViewSetMixin, views.APIView
+# d.具备APIView的所有功能
+# e.继承ViewSetMixin，所有具备持给as_view传递字典参数（请求方法名与具体调用的action方法名的一一对应关系）
+# class ProjectViewSet(viewsets.ViewSet):
+# class ProjectViewSet(
+#     mixins.ListModelMixin,
+#     mixins.RetrieveModelMixin,
+#     mixins.CreateModelMixin,
+#     mixins.UpdateModelMixin,
+#     mixins.DestroyModelMixin,
+#     viewsets.ViewSet):
 
-        # serializer = ProjectSerilizer(instance=project_obj)
-        # serializer = self.serializer_class(instance=project_obj)
-        serializer = self.get_serializer(instance=project_obj)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+# class ProjectViewSet(
+#         mixins.ListModelMixin,
+#         mixins.RetrieveModelMixin,
+#         mixins.CreateModelMixin,
+#         mixins.UpdateModelMixin,
+#         mixins.DestroyModelMixin,
+#         viewsets.GenericViewSet):
 
-    def put(self, request, **kwargs):
-        project_obj = self.get_object()
+# a.ModelViewSet是一个最完整的视图集类
+# b.提供了获取列表数据接口、获取详情数据接口、创建数据接口、更新数据接口、删除数据的接口
+# c.如果需要多某个模型进行增删改查操作，才会选择ModelViewSet
+# d.如果仅仅只对某个模型进行数据读取操作（取列表数据接口、获取详情数据接口），一般会选择ReadOnlyModelViewSet
+class ProjectViewSet(viewsets.ModelViewSet):
+    """
+    list:
+    获取项目列表数据
 
-        serializer = self.get_serializer(instance=project_obj, data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    retrieve:
+    获取项目详情数据
 
-    def delete(self, request, pk):
-        # try:
-        #     project_obj = Projects.objects.get(id=pk)
-        # except Exception as e:
-        #     return JsonResponse({'msg': '参数有误'}, status=400)
-        project_obj = self.get_object()
-        project_obj.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+    update:
+    更新项目信息
+
+    names:
+    获取项目名称
+
+    """
+
+    # def list(self, request, *args, **kwargs):
+    #     pass
+
+    # def retrieve(self, request, *args, **kwargs):
+    #     pass
+
+    # def create(self, request, *args, **kwargs):
+    #     pass
+
+    # def update(self, request, *args, **kwargs):
+    #     pass
+    #
+    # def partial_update(self, request, *args, **kwargs):
+    #     pass
+    #
+    # def destroy(self, request, *args, **kwargs):
+    #     pass
+
+    queryset = Projects.objects.all()
+    serializer_class = ProjectModelSerializer
+
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    search_fields = ['=name', '=leader', '=id']
+    ordering_fields = ['id', 'name', 'leader']
+
+    # 可以在类视图中指定分页引擎类，优先级高于全局
+    pagination_class = PageNumberPagination
+
+    # 1、如果需要使用路由器机制自动生成路由条目，那么就必须得使用action装饰器
+    # 2、methods指定需要使用的请求方法，如果不指定，默认为GET
+    # 3、detail指定是否为详情接口，是否需要传递当前模型的pk值
+    #   如果需要传递当前模型的pk值，那么detail=True，否则detail=False
+    # 4、url_path指定url路径，默认为action方法名称
+    # 5、url_name指定url路由条目名称后缀，默认为action方法名称
+    # @action(methods=['GET'], detail=False, url_path='xxx', url_name='yyyy')
+    @action(methods=['GET'], detail=False)
+    def names(self, request, *args, **kwargs):
+        # queryset = self.get_queryset()
+        # queryset = self.filter_queryset(queryset)
+        # names_list = []
+        # for project in queryset:
+        #     names_list.append({
+        #         'id': project.id,
+        #         'name': project.name
+        #     })
+        # serializer = self.get_serializer(queryset, many=True)
+        #
+        # # return Response(names_list, status=200)
+        # return Response(serializer.data, status=200)
+        return super().list(request, *args, **kwargs)
+
+    @action(detail=True)
+    def interfaces(self, request, *args, **kwargs):
+        project = self.get_object()
+        interfaces_qs = project.interfaces_set.all()
+        interfaces_data = [{'id': interface.id, 'name': interface.name} for interface in interfaces_qs]
+        return Response(interfaces_data, status=200)
+
+    def get_serializer_class(self):
+        """
+        a.可以重写父类的get_serializer_class方法，用于为不同的action提供不一样的序列化器类
+        b.在视图集对象中可以使用action属性获取当前访问的action方法名称
+        :return:
+        """
+        if self.action == 'names':
+            return ProjectsNamesModelSerailizer
+        else:
+            # return self.serializer_class
+            return super().get_serializer_class()
+
+    def retrieve(self, request, *args, **kwargs):
+        response = super().retrieve(request, *args, **kwargs)
+        response.data.pop('id')
+        response.data.pop('create_time')
+        return response
+
+    # def filter_queryset(self, queryset):
+    #     if self.action == "names":
+    #         return self.queryset
+    #     else:
+    #         return super().filter_queryset(queryset)
+
+    def paginate_queryset(self, queryset):
+        if self.action == "names":
+            return
+        else:
+            return super().paginate_queryset(queryset)
+
+    def get_queryset(self):
+        if self.action == "names":
+            return self.queryset.filter(name__icontains='2')
+        else:
+            return super().get_queryset()
+
+
+# 如何定义类视图？类视图的设计原则？
+# a.类视图尽量要简单
+# b.根据需求选择相应的父类视图
+# c.如果DRF中的类视图有提供相应的逻辑，那么就直接使用父类提供的
+# d.如果DRF中的类视图，绝大多数逻辑都能满足需求，可以重写父类实现
+# e.如果DRF中的类视图完全不满足要求，那么就直接自定义即可

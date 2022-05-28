@@ -249,3 +249,28 @@ class ProjectModelSerializer(serializers.ModelSerializer):
     #     instance = super().create(validated_data)
     #     instance.token = "xxxxxxx"
     #     return instance
+
+
+class ProjectModelSerializer1(serializers.ModelSerializer):
+    """
+    定义模型序列化器类
+    1、继承serializers.ModelSerializer类或者其子类
+    2、需要在Meta内部类中指定model、fields、exclude类属性参数
+    3、model指定模型类（需要生成序列化器的模型类）
+    4、fields指定模型类中哪些字段需要自动生成序列化器字段
+    5、会给id主键、指定了auto_now_add或者auto_now参数的DateTimeField字段，添加read_only=True，仅仅只进行序列化输出
+    6、有设置unique=True的模型字段，会自动在validators列表中添加唯一约束校验<UniqueValidator
+    7、有设置default=True的模型字段，会自动添加required=False
+    8、有设置null=True的模型字段，会自动添加allow_null=True
+    9、有设置blank=True的模型字段，会自动添加allow_blank=True
+    """
+    class Meta:
+        model = Projects
+        exclude = ('id', 'create_time')
+
+
+class ProjectsNamesModelSerailizer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Projects
+        fields = ('id', 'name')

@@ -15,6 +15,7 @@ Including another URLconf
 """
 # from django.contrib import admin
 from django.urls import path, include, re_path
+from rest_framework.documentation import include_docs_urls
 
 # from projects.views import index, get_project
 from projects import views
@@ -41,6 +42,21 @@ from projects import views
 #       默认的类型转化器：int、str、slug、uuid
 #       参数名称，在调用视图时，会自动传递给视图函数，需要使用同名的参数接收
 
+from drf_yasg.views import get_schema_view
+from drf_yasg import openapi
+
+schema_view = get_schema_view(
+    openapi.Info(
+        title="Lemon API接口文档平台",  # 必传
+        default_version='v1',  # 必传
+        description="这是一个美轮美奂的接口文档",
+        terms_of_service="http://api.keyou.site",
+        contact=openapi.Contact(email="keyou100@qq.com"),
+        license=openapi.License(name="BSD License"),
+    ),
+    public=True,
+)
+
 urlpatterns = [
     # path('admin/', admin.site.urls),
     # path('index/', index),
@@ -55,4 +71,9 @@ urlpatterns = [
     # path('project/put/', views.index),
     # path('project/', include('projects.urls')),
     path('', include('projects.urls')),
+
+    path('docs/', include_docs_urls(title='测试平台接口文档', description='xxx接口文档')),
+    re_path(r'^swagger(?P<format>\.json|\.yaml)$', schema_view.without_ui(cache_timeout=0), name='schema-json'),
+    path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
+    path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
 ]

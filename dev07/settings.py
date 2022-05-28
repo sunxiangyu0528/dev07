@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'drf_yasg',
 
     'projects',
     # 'projects.apps.ProjectsConfig',
@@ -164,6 +165,12 @@ REST_FRAMEWORK = {
     # 可以在全局使用SEARCH_PARAM修改前端过滤查询字符串参数名称（默认为search）
     # 'SEARCH_PARAM': 'se',
 
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    # 1、在全局settings.py文件，DEFAULT_PAGINATION_CLASS上指定分页引擎类PageNumberPagination
+    # 'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'DEFAULT_PAGINATION_CLASS': 'utils.pagination.PageNumberPagination',
+    # 2、指定每一页显示的数据条数
     'PAGE_SIZE': 3,
+
+    # 指定用于支持coreapi的Schema
+    'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema',
 }
