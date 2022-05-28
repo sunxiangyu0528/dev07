@@ -149,16 +149,24 @@ class ProjectsView(View):
 
         # 请求体参数
         # 1.json
-        #
+        #   a.json格式的参数会存放在body中，一般为字节类型
+        #   b.json.loads(request.body)，返回Python中的数据类型（字典、嵌套字典的列表）
+        # json.loads(request.body)
+
         # 2.www-form-urlencoded
         #   a.一般在前端页面中使用表单录入的参数
         #   b.request.POST返回QueryDict，类似于python中dict类型
 
-        # 3.file
-
+        # 3.file（multipart/data）
+        #   a.传递的文本参数可以使用request.POST去提取
+        #   b.传递的非文本参数（二进制文件）可以使用request.FILES去提取
+        #   c.如果传递纯粹的文件，request.body去提取
 
         # 请求头参数
-
+        #   a.第一种方式：request.headers['key1']或者.get('key1')
+        #   b.第二种方式：request.META['HTTP_AUTHORIZATION']
+        #       1）请求头参数的可以被转化为：HTTP_参数名大写
+        #       2）如果参数名中含有-，会自动转换为_
         return HttpResponse("<h1>创建项目信息</h1>")
 
     def put(self, request):

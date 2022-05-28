@@ -77,11 +77,24 @@ WSGI_APPLICATION = 'dev07.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
+# 指定在全局配置文件settings.py中的DATABASES字典里配置需要连接的数据库信息
 DATABASES = {
+    # 指定数据库的别名/标签
+    # 指定的是django默认使用的数据库
     'default': {
+        # 指定当前使用的数据库引擎
+        # django.db.backends.mysql、oracle、sqlite3
         'ENGINE': 'django.db.backends.sqlite3',
+        # 'ENGINE': 'django.db.backends.mysql',
+        # 指定数据库名称，如果使用的是sqlite3，需要指定sqlite3文件的绝对路径
         'NAME': BASE_DIR / 'db.sqlite3',
+        # 'NAME': 'mydb',
+        # 'USER': 'root',
+        # 'PASSWORD': '123456',
+        # 'PORT': 3306,
+        # 'HOST': '127.0.0.1'
     }
+
 }
 
 
