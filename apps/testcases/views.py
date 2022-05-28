@@ -12,9 +12,10 @@ from .models import Testcases
 from envs.models import Envs
 from . import serializers
 from utils import handle_datas, common
+from utils.mixins import RunMixin
 
 
-class TestcasesViewSet(viewsets.ModelViewSet):
+class TestcasesViewSet(RunMixin, viewsets.ModelViewSet):
 
     queryset = Testcases.objects.all()
     serializer_class = serializers.TestcaseModelSerializer
@@ -88,23 +89,25 @@ class TestcasesViewSet(viewsets.ModelViewSet):
     @action(methods=['post'], detail=True)
     def run(self, request, *args, **kwargs):
         # 1、取出用例模型对象并获取env_id
-        instance = self.get_object()    # type: Testcases
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        env_id = serializer.validated_data.get('env_id')
-        env = Envs.objects.get(id=env_id)
+        # instance = self.get_object()    # type: Testcases
+        # serializer = self.get_serializer(data=request.data)
+        # serializer.is_valid(raise_exception=True)
+        # env_id = serializer.validated_data.get('env_id')
+        # env = Envs.objects.get(id=env_id)
 
         # 2、创建以时间戳命名的目录
         # dirname = datetime.strftime(datetime.now(), "%Y%m%d%H%M%S")
-        testcase_dir_path = os.path.join(settings.PROJECT_DIR, datetime.strftime(datetime.now(), "%Y%m%d%H%M%S"))
-        os.makedirs(testcase_dir_path)
+        # testcase_dir_path = os.path.join(settings.PROJECT_DIR, datetime.strftime(datetime.now(), "%Y%m%d%H%M%S"))
+        # os.makedirs(testcase_dir_path)
 
         # 3、创建以项目名命名的目录
         # 4、生成debugtalks.py、yaml用例文件
-        common.generate_testcase_file(instance, env, testcase_dir_path)
+        # common.generate_testcase_file(instance, env, testcase_dir_path)
 
         # 5、运行用例并生成测试报告
-        pass
+        # return common.run_testcase(instance, testcase_dir_path)
+        qs = [self.get_object()]
+        return self.execute(qs)
 
     def get_serializer_class(self):
         if self.action == "run":

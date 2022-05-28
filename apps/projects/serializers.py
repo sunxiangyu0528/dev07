@@ -16,6 +16,8 @@ from rest_framework import serializers
 from interfaces.models import Interfaces
 from .models import Projects
 from debugtalks.models import DebugTalks
+from utils.validators import ManualValidateIsExist
+from utils.base_serializers import RunSerializer
 
 
 class ProjectModelSerializer(serializers.ModelSerializer):
@@ -57,3 +59,17 @@ class InterfacesProjectsModelSerializer(serializers.ModelSerializer):
     class Meta:
         model = Projects
         fields = ('interfaces', )
+
+
+# class ProjectRunSerializer(RunSerializer):
+#
+#     class Meta(RunSerializer.Meta):
+#         model = Projects
+
+class ProjectRunSerializer(RunSerializer):
+    env_id = serializers.IntegerField(label="所属环境id", help_text="所属环境id",
+                                      validators=[ManualValidateIsExist('env')])
+
+    class Meta:
+        model = Projects
+        fields = ('id', 'env_id')
